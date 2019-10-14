@@ -3,7 +3,7 @@
 template<class In, class Code>
 struct SW_Search
 {
-	void operator(In dataStart, In dataEnd, Code winSize, Code maxCountSize, Code* index, Code* count);
+	void operator()(In dataStart, In dataEnd, Code winSize, Code maxCountSize, Code* index, Code* count);
 };
 
 template<class In, class Code>
@@ -31,11 +31,11 @@ public:
 			winSize_(0), maxWinSize_(maxWinSize_), maxCountSize_(maxCountSize_);
 
 	template<template<class, class> class SW_Search>
-		void search(SW_Search<In, Code>& search, Code* index, Code* count);
+		 void search(SW_Search<In, Code>& search, Code* index, Code* count) const;
 
-	value_type value();
+	value_type value() const;
 
-	bool empty();
+	bool empty() const;
 
 	void inc(size_t n);
 };
