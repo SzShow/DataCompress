@@ -46,7 +46,7 @@ SlidingWindow< In,  Code>::SlidingWindow(In s, In e,
 	maxCountSize_(maxCountSize)
 {
 	if (std::distance(s, e) < maxWinSize_)
-	maxWinSize_ = std::distance(s, e);
+		maxWinSize_ = std::distance(s, e);
 }
 
 template<class In, class Code, class Container>
@@ -59,14 +59,14 @@ SlidingWindow<In, Code, Container>::SlidingWindow(
 	}
 
 template<class In, class Code, template<class, class> class SW_Search>
-	SlidingWindow<In, Code, SW_Search>::search(SW_Search<In, Code>& search,
+	void SlidingWindow<In, Code, SW_Search>::search(SW_Search<In, Code>& search,
 	Code* index, Code* count) const
 	{
 		search(curIndex_, dataEnd_, winSize_, maxCountSize_, index, count);
 	}
 
 template<class In, class Code>
-SlidingWindow<In, Code>::value() const
+value_type SlidingWindow<In, Code>::value() const
 {
 	return(curIndex_ == dataEnd_);
 }
