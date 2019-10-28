@@ -2,10 +2,23 @@
 //
 
 #include <iostream>
+#include "LZ77.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-    std::cout << "Hello World!\n";
+    // ファイル読み込み
+	// 出力はbyte配列
+
+
+	// 圧縮の実行
+	// 
+	std::vector<Byte> data = new std::vector<Byte>;
+	std::vector<uint>* packed = nullptr;
+	
+	LZ77Encode<uint, uint, SW_Search<uint, uint>>();
+
+	// ファイルの出力
+
 }
 
 // プログラムの実行: Ctrl + F5 または [デバッグ] > [デバッグなしで開始] メニュー
