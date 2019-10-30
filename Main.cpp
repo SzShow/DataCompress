@@ -2,7 +2,11 @@
 //
 
 #include <iostream>
+
+
+
 #include "LZ77.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -12,12 +16,14 @@ int main(int argc, char *argv[])
 
 	// 圧縮の実行
 	// 
-	std::vector<Byte> data = new std::vector<Byte>;
+	std::vector<BYTE> data = new std::vector<Byte>;
 	std::vector<uint>* packed = nullptr;
 	
 	LZ77Encode<uint, uint, SW_Search<uint, uint>>();
 
 	// ファイルの出力
+
+	//終了入力の受付
 
 }
 

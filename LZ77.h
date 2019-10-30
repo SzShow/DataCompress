@@ -1,14 +1,16 @@
 
+#include <vector>
+
 // Encoder
 template<class T, class Code, template<class, class> class SW_SearchType>
 bool LZ77Encode(const std::vector<T>& data,
-								std::vector<code>* packed,
+								std::vector<Code>* packed,
 								size_t indexBit,
-								SW_SearchType<typename std::vector<T>::const_iterator, code>& swSearch);
+								SW_SearchType<typename std::vector<T>::const_iterator, Code>& swSearch);
 
 // Decoder
 template<class T, class Code>
-bool LZ77Decode(const std::vector<Code>& packed, std::vecor<T>* data,
+bool LZ77Decode(const std::vector<Code>& packed, std::vector<T>* data,
 								size_t indexBit, typename std::vector<T>::size_type dataCount);
 
 // CodeGenerator
@@ -35,7 +37,7 @@ public:
 		return((index << countBit_) | count);
 	}
 
-	void decode(Code code, Code* index, Code* count) const
+	void Decode(Code code, Code* index, Code* count) const
 	{
 		*index = (code >> countBit_) & indexMask_;
 		*count = code & countMask_;
@@ -48,14 +50,19 @@ public:
 
 };
 
+
+#pragma region SlidingWindow
+
 template<class In, class Code>
 struct SW_Search
 {
 	void operator()(In dataStart, In dataEnd, Code winSize, Code maxCountSize, Code* index, Code* count);
 };
 
+
 template<class In, class Code>
 void SW_Search<In, Code>::operator()(In dataStart, In dataEnd, Code winSize, Code maxCountSize, Code* index, Code* count);
+
 
 template<class In, class Code>
 class SlidingWindow
@@ -69,17 +76,28 @@ private:
 	Code maxCountSize_;
 
 public:
+	// 通常コンストラクタ
 	SlidingWindow(In s, In e, Code maxWinSize, Code maxCountSize)
 		:dataStart_(s), dataEnd_(e), curIndex_(s),
-		winSize_(0), maxWinSize_(maxWinSize), maxCountSize_(maxCountSize);
+		winSize_(0), maxWinSize_(maxWinSize), maxCountSize_(maxCountSize)
+	{
+		if (std::distance(s, e) < maxWinSize_)
+		{
+			maxWinSize_ = std::distance(s, e);
+		}
+	}
 
+	// データ列Containerを指定した場合のコンストラクタ
 	template<class Container>
-		SlidingWindow(const Container& container, Code maxWinSize, Code maxCountSize)
-			: dataStart_(container.begin()), dataEnd_(container.end()), curIndex_(container.begin()),
-			winSize_(0), maxWinSize_(maxWinSize_), maxCountSize_(maxCountSize_);
+	SlidingWindow(const Container& container, Code maxWinSize, Code maxCountSize)
+		: dataStart_(container.begin()), dataEnd_(container.end()), curIndex_(container.begin()),
+		winSize_(0), maxWinSize_(maxWinSize_), maxCountSize_(maxCountSize_)
+	{
+
+	}
 
 	template<template<class, class> class SW_Search>
-		 void search(SW_Search<In, Code>& search, Code* index, Code* count) const;
+	void search(SW_Search<In, Code>& search, Code* index, Code* count) const;
 
 	value_type value() const;
 
@@ -90,3 +108,5 @@ public:
 
 template<class In, class Code>
 void SlidingWindow<In, Code>::inc(size_t n);
+
+#pragma endregion
