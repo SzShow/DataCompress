@@ -151,16 +151,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DataOutput.cpp" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="LZ77.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="DataInput.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DataInput.h" />
-    <ClInclude Include="DataOutput.h" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="LZ77.h" />
-    <ClInclude Include="SW_Search.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

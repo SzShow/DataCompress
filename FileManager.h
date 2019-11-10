@@ -1,3 +1,4 @@
+#include <stdio.h>
 
 class FileManager
 {
@@ -10,7 +11,7 @@ public:
 	static void Create();
 	static void Destroy();
 
-	void LoadFile();
+	void LoadFile(char* fileName, FILE* out);
 	void SaveFile();
 
 protected:
