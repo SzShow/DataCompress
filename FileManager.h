@@ -9,11 +9,21 @@ public:
 		return s_pInstance;
 	}
 
-	static void Create();
-	static void Destroy();
+	static void Create()
+	{
+		if (!s_pInstance)
+		{
+			s_pInstance = new FileManager;
+		}
+	}
+	static void Destroy()
+	{
+		delete s_pInstance;
+		s_pInstance = nullptr;
+	}
 
-	void LoadFile(char* fileName, string* out);
-	void SaveFile();
+	int LoadFile(const char* fileName, std::string* out);
+	int SaveFile(const char* fileName, std::string* in);
 
 protected:
 	static FileManager *s_pInstance;

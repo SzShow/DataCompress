@@ -1,27 +1,16 @@
 
 #include "FileManager.h"
+#include <fstream>
 #include <iostream>
 #include <iterator>
 
 FileManager *FileManager::s_pInstance = nullptr;
 
-static void FileManager::Create()
-{
-	if(!s_pInstance)
-	{
-		s_pInstance = new FileManager;
-	}
-}
 
-static void FileManager::Destroy()
-{
-	delete s_pInstance;
-	s_pInstance = nullptr;
-}
 
-void FileManager::LoadFile(char* fileName, string* out)
+int FileManager::LoadFile(const char* fileName, std::string* out)
 {
-	std::ifstream ifs(*fileName);
+	std::ifstream ifs(fileName);
 	if (ifs.fail())
 	{
 		std::cerr << "読み込みエラー" << std::endl;
@@ -31,5 +20,22 @@ void FileManager::LoadFile(char* fileName, string* out)
 	std::istreambuf_iterator<char> last;
 	std::string str(it, last);
 	std::string* out = &str;
+
+	return 0;
 	
+}
+
+int FileManager::SaveFile(const char* fileName, std::string* in)
+{
+	std::ofstream ofs;
+	ofs.open(fileName);
+	if (ofs.fail)
+	{
+		std::cerr << "読み込みエラー" << std::endl;
+		return -1;
+	}
+	ofs << *in;
+	ofs.close();
+
+	return 0;
 }

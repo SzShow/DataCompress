@@ -31,11 +31,15 @@ vector <string> split(string str, char delimiter)
 	return internal;
 }
 
+// argv[0]: 入力ファイル名
+// argv[1]: 出力ファイル名
 int main(int argc, char *argv[])
 {
     // 初期化
-	FILE* fp_i;
-	FILE* fp_o;
+	int errorCode = 0;
+
+	string input;
+	string output;
 
 	FileManager::Create();
 	FileManager* fManager = FileManager::GetInstance();
@@ -49,31 +53,34 @@ int main(int argc, char *argv[])
 
 	// ファイル読み込み
 	
-	fManager->LoadFile(argv[1], fp_i);
+	errorCode = fManager->LoadFile(argv[0], &input);
+	if (errorCode != 0)
+	{
+		return errorCode;
+	}
+	
 	
 
 	// 圧縮の実行
 	// 
-	fp_o = fopen(argv[2], "wb");
-	if (fp_o == NULL)
-	{
-		fprintf(stderr, "Output File cannot open\n");
-		exit(8);
-	}
-	dic_bits = atoi(argv[3]);
-	code_bits = atoi(argv[4]);
+	output = LZ77(input, 2);
 
 
 	// ファイルの出力
-
+	errorCode = fManager->SaveFile(argv[1], &input);
+	if (errorCode != 0)
+	{
+		return errorCode;
+	}
 
 	//終了処理
 	FileManager::Destroy();
-	fclose(fp_i);
-	fclose(fp_o);
 
 	//終了入力の受付
+	cout << "圧縮が完了しました。\n任意のキーで終了します" << endl;
+	getchar();
 
+	return 0;
 
 }
 
