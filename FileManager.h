@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string>
 
 class FileManager
 {
@@ -11,7 +12,7 @@ public:
 	static void Create();
 	static void Destroy();
 
-	void LoadFile(char* fileName, FILE* out);
+	void LoadFile(char* fileName, string* out);
 	void SaveFile();
 
 protected:
