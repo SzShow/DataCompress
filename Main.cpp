@@ -91,14 +91,14 @@ string LZ77(string input, int option)
 
 	if (option == 1)
 	{
-	check_char:
+	//check_char:
 		length = (int)input.length();
-		if (length <= 2)
-		{
-			cout << "enter at leaset 3 charcters \n";
-			getline(cin, input);
-			goto check_char;
-		}
+		//if (length <= 2)
+		//{
+		//	cout << "enter at leaset 3 charcters \n";
+		//	getline(cin, input);
+		//	goto check_char;
+		//}
 
 		int** result_aray = new int* [3];
 		for (int i = 0; i < length; i++)
@@ -113,8 +113,10 @@ string LZ77(string input, int option)
 			}
 		}
 
+		// char_info[0][index]: 符号化対応文字列の開始地点
+		// char_info[1][index]: 符号化対応文字列の長さ
 		int** char_info = new int* [3];
-		for (int i = 0; i < length; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			char_info[i] = new int[length];
 		}
@@ -133,51 +135,66 @@ string LZ77(string input, int option)
 		int result_count = 1;
 
 		// 入力データの走査
-		for (int i = 1; i < length; i++)
+		// i: 符号化対象の文字のインデックス
+		// j: 過去の入力文字のインデックス
+		for (int currentIndex = 1; currentIndex < length; currentIndex++)
 		{
-			// 
-			for (int j = 0; j < i; j++)
+			// 過去の入力に対して走査
+			for (int pastIndex = 0; pastIndex < currentIndex; pastIndex++)
 			{
-				if (input[i] == input[j])
+				// 現在の文字が過去の入力と一致した場合
+				// 過去の入力と現在の入力の配列的距離を記録
+				if (input[currentIndex] == input[pastIndex])
 				{
-					char_info[0][char_info_selc] = i - j;
+					char_info[0][char_info_selc] = currentIndex - pastIndex;
 					char_info_selc++;
 				}
 
 			}
 
-			for (int j = 0; j < length; j++)
+			// char_infoについて走査
+			for (int infoIndex = 0; infoIndex < length; infoIndex++)
 			{
-				if (char_info[0][j] != 0)
+				
+				if (char_info[0][infoIndex] != 0)
 				{
-					int start = i - char_info[0][j];
+					// 一致箇所の配列全体でのインデックスを代入
+					int start = currentIndex - char_info[0][infoIndex];
 					int count = 1;
 
+					// 一致箇所から一つずつインデックスを進める
 					for (int k = 0; k < length; k++)
 					{
-						if (input[start + count] == input[i + count])
+						// 連続した一致箇所を探す
+						if (input[start + count] == input[currentIndex + count])
 						{
 							count++;
 						}
 						else
 						{
-							char_info[i][j] = count;
+							// 一致箇所の検出が途切れた場合
 
-							if (i != (length - 1))
+							// 長さを入力
+							char_info[1][infoIndex] = count;
+
+							// 現在位置が入力文字列の末尾であるかチェック
+							if (currentIndex != (length - 1))
 							{
-								if (char_info[0][j] + count == length)
+								// 
+								if (char_info[0][infoIndex] + count == length)
 								{
-									char_info[2][j] = 0;
+									char_info[2][infoIndex] = 0;
 								}
 								else
 								{
-									char_info[2][j] = input[char_info[0][j] + count];
+									// 
+									char_info[2][infoIndex] = input[char_info[0][infoIndex] + count];
 								}
 							
 							}
 							else
 							{
-								char_info[2][j] = NULL;
+								char_info[2][infoIndex] = NULL;
 							}
 						}
 					}
@@ -188,8 +205,10 @@ string LZ77(string input, int option)
 
 			int large = 0;
 
+			// 最も大きい長さの一致を探索
 			for (int k = 1; k < length; k++)
 			{
+				
 				if (char_info[1][large] == char_info[1][k])
 				{
 					large = k;
@@ -202,12 +221,12 @@ string LZ77(string input, int option)
 
 			if (char_info[1][large] == 0)
 			{
-				char_info[2][large] = input[i];
+				char_info[2][large] = input[currentIndex];
 			}
 			else
 			{
-				i += char_info[1][large];
-				char_info[2][large] = input[i];
+				currentIndex += char_info[1][large];
+				char_info[2][large] = input[currentIndex];
 			}
 
 			result_aray[0][result_count] = char_info[0][large];
@@ -216,6 +235,7 @@ string LZ77(string input, int option)
 
 			result_count++;
 
+			// char_infoの初期化
 			for (int z = 0; z < 2; z++)
 			{
 				for (int j = 0; j < length; j++)
@@ -229,7 +249,7 @@ string LZ77(string input, int option)
 
 		for (int j = 0; j < length; j++)
 		{
-			if (result_aray[2][j] == 0 && result_aray[1][j] == 0)
+			if (result_aray[0][j] == 0 && result_aray[1][j] == 0)
 			{
 				if (result_aray[2][j] != NULL || result_aray[2][j] != 0)
 				{
@@ -276,8 +296,10 @@ string LZ77(string input, int option)
 			{
 				result += ch;
 			}
-			return result;
+			
 		}
+
+		return result;
 	}
 }
 
