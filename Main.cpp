@@ -1,5 +1,21 @@
-﻿// DataCompress.cpp : このファイルには 'main' 関数が含まれています。プログラム実行の開始と終了がそこで行われます。
-//
+﻿//---------------------------------------------------------------------------
+// Developed by Shota Suzuki
+//---------------------------------------------------------------------------
+/**
+* @file Main.cpp
+* @brief 動作の基点部分
+* @todo 今後追加する機能等(オプション)
+* @note メモ(オプション)
+*
+* 　詳細説明
+*
+* LZ77方式によって入力されたファイルを圧縮するプログラムです。
+* コマンドライン引数に入力ファイル名を入れると、
+* 対応するファイルの圧縮・解凍ファイルが出力されます
+* 圧縮ファイルには独自の形式として.cmpを用いてます。
+* 
+*/
+//---------------------------------------------------------------------------
 
 //Source: https://gist.github.com/MajedSiefALnasr/32cff52b01d764ee158f2c36e4e84d95
 
@@ -16,6 +32,8 @@ using namespace std;
 #include "FileManager.h"
 
 typedef unsigned char byte;
+
+string LZ77(string input, int option);
 
 vector <string> split(string str, char delimiter)
 {
@@ -44,16 +62,10 @@ int main(int argc, char *argv[])
 	FileManager::Create();
 	FileManager* fManager = FileManager::GetInstance();
 
-	int dic_bits, code_bits;
-
-	if(argc < 5)
-	{
-		exit(8);
-	}
 
 	// ファイル読み込み
 	
-	errorCode = fManager->LoadFile(argv[0], &input);
+	errorCode = fManager->LoadFile(argv[1], &input);
 	if (errorCode != 0)
 	{
 		return errorCode;
@@ -63,11 +75,12 @@ int main(int argc, char *argv[])
 
 	// 圧縮の実行
 	// 
-	output = LZ77(input, 2);
+	int option = *argv[3] - '0';
+	output = LZ77(input, option);
 
 
 	// ファイルの出力
-	errorCode = fManager->SaveFile(argv[1], &input);
+	errorCode = fManager->SaveFile(argv[2], &output);
 	if (errorCode != 0)
 	{
 		return errorCode;
@@ -120,7 +133,7 @@ string LZ77(string input, int option)
 		{
 			char_info[i] = new int[length];
 		}
-		for (int i = 0; i < length; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			for (int j = 0; j < length; j++)
 			{
@@ -236,6 +249,7 @@ string LZ77(string input, int option)
 			result_count++;
 
 			// char_infoの初期化
+			//
 			for (int z = 0; z < 2; z++)
 			{
 				for (int j = 0; j < length; j++)
@@ -257,6 +271,11 @@ string LZ77(string input, int option)
 					result += to_string(result_aray[0][j]) + "," + to_string(result_aray[1][j]) + "," + z + " ";
 				}
 			}
+			else
+			{
+				char z = result_aray[2][j];
+				result += to_string(result_aray[0][j]) + "," + to_string(result_aray[1][j]) + "," + z + " ";
+			}
 		}
 
 		return result;
@@ -267,9 +286,25 @@ string LZ77(string input, int option)
 	{
 		vector<string> s_input = split(input, ' ');
 
-		for (int i = 0; i < s_input.size(); ++i)
+		for (unsigned int i = 0; i < s_input.size(); ++i)
 		{
+			if (s_input[i].size() == 0)
+			{
+				continue;
+			}
+
 			vector<string> ss_input = split(s_input[i], ',');
+
+			if (s_input[i][4] == ',')
+			{
+				ss_input[2] = ',';
+			}
+			else if (ss_input.size() == 2)
+			{
+				ss_input.push_back(" ");
+			}
+
+			//if ((int)ss_input)
 
 			int p = stoi(ss_input[0]), l = stoi(ss_input[1]);
 			string ch;

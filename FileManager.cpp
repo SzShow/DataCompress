@@ -1,12 +1,11 @@
 
-#include "FileManager.h"
 #include <fstream>
 #include <iostream>
 #include <iterator>
 
-FileManager *FileManager::s_pInstance = nullptr;
+#include "FileManager.h"
 
-
+FileManager *FileManager::l_pInstance = nullptr;
 
 int FileManager::LoadFile(const char* fileName, std::string* out)
 {
@@ -19,7 +18,7 @@ int FileManager::LoadFile(const char* fileName, std::string* out)
 	std::istreambuf_iterator<char> it(ifs);
 	std::istreambuf_iterator<char> last;
 	std::string str(it, last);
-	std::string* out = &str;
+	*out = str;
 
 	return 0;
 	
@@ -29,7 +28,7 @@ int FileManager::SaveFile(const char* fileName, std::string* in)
 {
 	std::ofstream ofs;
 	ofs.open(fileName);
-	if (ofs.fail)
+	if (ofs.fail())
 	{
 		std::cerr << "“Ç‚Ýž‚ÝƒGƒ‰[" << std::endl;
 		return -1;
@@ -38,4 +37,14 @@ int FileManager::SaveFile(const char* fileName, std::string* in)
 	ofs.close();
 
 	return 0;
+}
+
+FileManager::FileManager()
+{
+
+}
+
+FileManager::~FileManager()
+{
+	Destroy();
 }

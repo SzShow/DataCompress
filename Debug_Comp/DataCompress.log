@@ -1,0 +1,6 @@
+﻿  FileManager.cpp
+  LZ77Compresser.cpp
+  Main.cpp
+  コードを生成中...
+C:\Users\thesz\source\repos\DataCompress\Main.cpp(338): warning C4715:  'LZ77': 値を返さないコントロール パスがあります。
+  DataCompress.vcxproj -> C:\Users\thesz\source\repos\DataCompress\Debug_Comp\DataCompress.exe

@@ -1,31 +1,40 @@
+
+#ifndef FILE_MANAGER_H_
+#define FILE_MANAGER_H_
+
 #include <stdio.h>
 #include <string>
 
 class FileManager
 {
 public:
-	static FileManager *GetInstance()
+	static FileManager* GetInstance()
 	{
-		return s_pInstance;
+		return l_pInstance;
 	}
+
 
 	static void Create()
 	{
-		if (!s_pInstance)
+		if (!l_pInstance)
 		{
-			s_pInstance = new FileManager;
+			l_pInstance = new FileManager;
 		}
 	}
 	static void Destroy()
 	{
-		delete s_pInstance;
-		s_pInstance = nullptr;
+		delete l_pInstance;
+		l_pInstance = nullptr;
 	}
-
 	int LoadFile(const char* fileName, std::string* out);
 	int SaveFile(const char* fileName, std::string* in);
 
 protected:
-	static FileManager *s_pInstance;
+	static FileManager *l_pInstance;
 	FileManager();
+	~FileManager();
 };
+
+#endif//FILE_MANAGER_H_
+
+
