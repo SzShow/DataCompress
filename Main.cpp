@@ -30,6 +30,7 @@ using namespace std;
 #define FALSE 0
 
 #include "FileManager.h"
+#include "UtilityFunction.h"
 
 typedef unsigned char byte;
 
@@ -75,6 +76,8 @@ int main(int argc, char *argv[])
 
 	// 圧縮の実行
 	// 
+	LZ77Compresser lz77(input);
+
 	int option = *argv[3] - '0';
 	output = LZ77(input, option);
 

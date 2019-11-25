@@ -11,11 +11,27 @@ std::string Compress(const std::string input);
 class LZ77Compresser
 {
 public:
-	LZ77Compresser(const std::string input);
-	~LZ77Compresser();
+
 	std::string Compress(const std::string input);
 
+
+	static void Create()
+	{
+		if (!l_pInstance)
+		{
+			l_pInstance = new LZ77Compresser;
+		}
+	}
+	static void Destroy()
+	{
+		delete l_pInstance;
+		l_pInstance = nullptr;
+	}
+
 protected:
+	LZ77Compresser(const std::string input);
+	~LZ77Compresser();
+
 	void EncodeChar();
 	void ScanMatchingChar(const int currentIndex);
 	void AssignValueToBuffer(int* currentIndex);
@@ -26,6 +42,8 @@ protected:
 	void  GetIndexOf();
 
 protected:
+	static LZ77Compresser* l_pInstance;
+
 	string _input;
 	int _inputLength;
 	int _indexOfMaxLength;
