@@ -30,6 +30,7 @@ using namespace std;
 #define FALSE 0
 
 #include "FileManager.h"
+#include "LZ77Compresser.h"
 #include "UtilityFunction.h"
 
 typedef unsigned char byte;
@@ -76,10 +77,16 @@ int main(int argc, char *argv[])
 
 	// 圧縮の実行
 	// 
-	LZ77Compresser lz77(input);
+	LZ77Compresser::Create(input);
+	LZ77Compresser* lz77 = LZ77Compresser::GetInstance();
+	errorCode = lz77->Compress(&output);
+	if (errorCode != 0)
+	{
+		return errorCode;
+	}
 
-	int option = *argv[3] - '0';
-	output = LZ77(input, option);
+	//int option = *argv[3] - '0';
+	//output = LZ77(input, option);
 
 
 	// ファイルの出力
@@ -91,6 +98,7 @@ int main(int argc, char *argv[])
 
 	//終了処理
 	FileManager::Destroy();
+	LZ77Compresser::Destroy();
 
 	//終了入力の受付
 	cout << "圧縮が完了しました。\n任意のキーで終了します" << endl;
@@ -158,8 +166,6 @@ string LZ77(string input, int option)
 			// 過去の入力に対して走査
 			for (int pastIndex = 0; pastIndex < currentIndex; pastIndex++)
 			{
-				// 現在の文字が過去の入力と一致した場合
-				// 過去の入力と現在の入力の配列的距離を記録
 				if (input[currentIndex] == input[pastIndex])
 				{
 					char_info[0][char_info_selc] = currentIndex - pastIndex;

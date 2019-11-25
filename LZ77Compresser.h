@@ -6,20 +6,26 @@
 
 #include "UtilityFunction.h"
 
-std::string Compress(const std::string input);
 
 class LZ77Compresser
 {
 public:
 
-	std::string Compress(const std::string input);
+	// 圧縮実行のインターフェイス
+	int Compress(std::string* output);
 
+	// インスタンスの取得
+	static LZ77Compresser* GetInstance()
+	{
+		return l_pInstance;
+	}
 
-	static void Create()
+	// インスタンスの操作
+	static void Create(const std::string input)
 	{
 		if (!l_pInstance)
 		{
-			l_pInstance = new LZ77Compresser;
+			l_pInstance = new LZ77Compresser(input);
 		}
 	}
 	static void Destroy()
@@ -29,37 +35,42 @@ public:
 	}
 
 protected:
+	// コンストラクタ・デコンストラクタ
 	LZ77Compresser(const std::string input);
 	~LZ77Compresser();
 
-	void EncodeChar();
-	void ScanMatchingChar(const int currentIndex);
-	void AssignValueToBuffer(int* currentIndex);
-	void SetResultArries(const int target);
+	
+	// 内部機能
+	void ScanMatchingChar();
+	void CountMatchingLength();
+	int PickupLastChar();
+	void SetResultBuffer();
 	void ResetBufferValue();
-	std::string ConstructCode(const int target);
-
-	void  GetIndexOf();
+	inline void DecideNextIndex();
+	std::string Encode(const int targetIndex);
+	int SearchLongestIndex();
 
 protected:
+	// シングルトンインスタンス
 	static LZ77Compresser* l_pInstance;
 
-	string _input;
-	int _inputLength;
-	int _indexOfMaxLength;
+	// 内部変数
+	string _input; // 入力データ
+	int _inputLength; // 入力データの要素数
+	int _currentIndex; // 符号化の対象となっている文字列の最後尾
+	int _largestIndex; // 最も長い一致文字列の開始位置
+	int _resultCount; // 最後に書き込んだ出力用バッファのインデックス
 
+	// 出力バッファ
 	int* _resultMatchingIndex;
 	int* _resultMatchingLength;
 	int* _resultLastChar;
 
+	// 基本バッファ
 	int* _bufferMatchingIndex;
 	int* _bufferMatchingLength;
 	int* _bufferLastChar;
 };
 
-
-LZ77Compresser::~LZ77Compresser()
-{
-}
 
 #endif

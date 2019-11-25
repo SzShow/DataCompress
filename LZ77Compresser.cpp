@@ -4,9 +4,54 @@
 
 using namespace std;
 
-LZ77Compresser::LZ77Compresser(const string input):
+int LZ77Compresser::Compress(string* output)
+{
+
+	int result_count = 1;
+
+	// 入力データの走査
+	while (_currentIndex < _inputLength)
+	{
+
+		// 1. 過去の文字列から現在の文字と一致するものをリストアップ
+		ScanMatchingChar();
+
+		// 2. リストアップした文字からインデックスを計算
+		CountMatchingLength();
+		
+		// 3. 符号化する文字列に続く文字を保存
+		PickupLastChar();
+		
+		// 4. 最も長い一致文字列を出力用バッファに保存
+		SetResultBuffer();
+		
+		// 5. 通常バッファの中身をリセット
+		ResetBufferValue();
+		
+		// 6. 一致文字列の長さから次の符号化対象文字列を決定
+		DecideNextIndex();
+
+	}
+
+	// 出力への書き込み
+	string code;
+	for (int outputIndex = 0; outputIndex < _inputLength; outputIndex++)
+	{
+
+		*output += Encode(outputIndex);
+
+	}
+
+	return 0;
+
+}
+
+// コンストラクタ・デコンストラクタ
+LZ77Compresser::LZ77Compresser(const string input) :
 	_input(input),
-	_inputLength(static_cast<int>(input.length()))
+	_inputLength(static_cast<int>(input.length())),
+	_currentIndex(1),
+	_resultCount(0)
 {
 	_resultMatchingIndex = new int[_inputLength];
 	for (int i = 0; i < _inputLength; i++)
@@ -47,100 +92,109 @@ LZ77Compresser::LZ77Compresser(const string input):
 	_resultLastChar[0] = _input[0];
 }
 
-void LZ77Compresser::ScanMatchingChar(const int currentIndex)
+LZ77Compresser::~LZ77Compresser()
+{
+	// 内部変数
+	_input; // 入力データ
+
+	// 出力バッファ
+	delete[] _resultMatchingIndex;
+	delete[] _resultMatchingLength;
+	delete[] _resultLastChar;
+
+	// 基本バッファ
+	delete[] _bufferMatchingIndex;
+	delete[] _bufferMatchingLength;
+	delete[] _bufferLastChar;
+}
+
+// 基本バッファの操作
+void LZ77Compresser::ScanMatchingChar()
 {
 	int char_info_selc = 0;
 	
-	for (int pastIndex = 0; pastIndex < currentIndex; pastIndex++)
+	for (int pastIndex = 0; pastIndex < _currentIndex; pastIndex++)
 	{
 		// 現在の文字が過去の入力と一致した場合
 		// 過去の入力と現在の入力の配列的距離を記録
-		if (_input[currentIndex] == _input[pastIndex])
+		// 
+		if (_input[_currentIndex] == _input[pastIndex])
 		{
 			_bufferMatchingIndex[char_info_selc] = 
-				currentIndex - pastIndex;
+				_currentIndex - pastIndex;
 			char_info_selc++;
 		}
 
 	}
 }
 
-void LZ77Compresser::AssignValueToBuffer(int* currentIndex)
+void LZ77Compresser::CountMatchingLength()
 {
-	// char_infoについて走査
-	// CharToCode();
-	for (int infoIndex = 0; infoIndex < _inputLength; infoIndex++)
-	{
 
-		if (_bufferMatchingIndex[infoIndex] != 0)
+	for (int bufferIndex = 0; bufferIndex < _inputLength; bufferIndex++)
+	{
+		// 一文字目が一致したインデックスのみ数える
+		if (_bufferMatchingIndex[bufferIndex] != 0)
 		{
-			// 一致箇所の配列全体でのインデックスを代入
-			int start = *currentIndex - _bufferMatchingIndex[infoIndex];
+			int start = _currentIndex - _bufferMatchingIndex[bufferIndex];
 			int count = 1;
 
-			// 一致箇所から一つずつインデックスを進める
+			// 長さの探索開始
 			for (int k = 0; k < _inputLength; k++)
 			{
 				// 連続した一致箇所を探す
-				if (_input[start + count] == _input[*currentIndex + count])
+				if (_input[start + count] == _input[_currentIndex + count])
 				{
 					count++;
 				}
 				else
 				{
-					// 一致箇所の検出が途切れた場合
+					// 一致文字列の長さを入力
+					_bufferMatchingLength[bufferIndex] = count;
 
-					// 長さを入力
-					_bufferMatchingLength[infoIndex] = count;
-
-					// 現在位置が入力文字列の末尾であるかチェック
-					if (*currentIndex != (_inputLength - 1))
-					{
-						// 
-						if (_bufferMatchingIndex[infoIndex] + count ==
-							_inputLength)
-						{
-							_bufferLastChar[infoIndex] = 0;
-						}
-						else
-						{
-							// 
-							_bufferLastChar[infoIndex] =
-								_input[_bufferMatchingIndex[infoIndex] + count];
-						}
-
-					}
-					else
-					{
-						_bufferLastChar[infoIndex] = NULL;
-					}
+					continue;
 				}
 			}
 		}
-
-		int large = 0;
-		//<int>
-		//ArrayMaxGetIndex(_bufferLength);
-
-		if (_bufferMatchingLength[large] == 0)
-		{
-			_bufferLastChar[large] = _input[currentIndex];
-		}
-		else
-		{
-			*currentIndex += _bufferMatchingLength[large];
-			_bufferLastChar[large] = _input[currentIndex];
-		}
-
-
 	}
 }
 
-void LZ77Compresser::SetResultArries(const int targetIndex)
+int LZ77Compresser::PickupLastChar()
 {
-	_resultMatchingIndex[targetIndex] = _bufferMatchingIndex[_indexOfMaxLength];
-	_resultMatchingLength[targetIndex] = _bufferMatchingLength[_indexOfMaxLength];
-	_resultLastChar[targetIndex] = _bufferLastChar[_indexOfMaxLength];
+	for (int bufferIndex = 0; bufferIndex < _inputLength; bufferIndex++)
+	{
+		if (_bufferMatchingIndex[bufferIndex] != 0)
+		{
+			// 現在位置が入力文字列の末尾であるかチェック
+			if (_currentIndex != (_inputLength - 1))
+			{
+				if (_bufferMatchingIndex[bufferIndex] +
+					_bufferMatchingLength[bufferIndex] ==
+					_inputLength)
+				{
+					_bufferLastChar[bufferIndex] = 0;
+				}
+				else
+				{
+					// 
+					_bufferLastChar[bufferIndex] =
+						_input[_bufferMatchingIndex[bufferIndex] +
+						_bufferMatchingLength[bufferIndex]];
+				}
+
+			}
+			else
+			{
+				_bufferLastChar[bufferIndex] = NULL;
+			}
+		}
+		else
+		{
+			_bufferLastChar[bufferIndex] = _input[_currentIndex];
+		}
+
+	}
+
 }
 
 void LZ77Compresser::ResetBufferValue()
@@ -153,63 +207,70 @@ void LZ77Compresser::ResetBufferValue()
 	}
 }
 
-string LZ77Compresser::ConstructCode(const int target)
+
+// 出力用バッファの操作
+void LZ77Compresser::SetResultBuffer()
+{
+	_resultCount++;
+	int longestIndex = SearchLongestIndex();
+	_resultMatchingIndex[_resultCount] = _bufferMatchingIndex[longestIndex];
+	_resultMatchingLength[_resultCount] = _bufferMatchingLength[longestIndex];
+	_resultLastChar[_resultCount] = _bufferLastChar[longestIndex];
+}
+
+
+// 符号化の実行
+string LZ77Compresser::Encode(const int targetIndex)
 {
 	string out;
-	if (_resultMatchingIndex[target] == 0 && _resultMatchingLength[target] == 0)
+	if (_resultMatchingIndex[targetIndex] == 0 &&
+		_resultMatchingLength[targetIndex] == 0)
 	{
-		if (_resultLastChar[target] != NULL || _resultLastChar[target] != 0)
+		if (_resultLastChar[targetIndex] != NULL ||
+			_resultLastChar[targetIndex] != 0)
 		{
-			char z = _resultLastChar[target];
-			out = to_string(_resultMatchingIndex[target]) + "," +
-				to_string(_resultMatchingLength[target]) + "," +
+			char z = _resultLastChar[targetIndex];
+			out = to_string(_resultMatchingIndex[targetIndex]) + "," +
+				to_string(_resultMatchingLength[targetIndex]) + "," +
 				z + " ";
 		}
 	}
 	else
 	{
-		char z = _resultLastChar[target];
-		out = to_string(_resultMatchingIndex[target]) + "," +
-			to_string(_resultMatchingLength[target]) + "," +
+		// コードが長くなる原因を作っている
+		char z = _resultLastChar[targetIndex];
+		out = to_string(_resultMatchingIndex[targetIndex]) + "," +
+			to_string(_resultMatchingLength[targetIndex]) + "," +
 			z + " ";
 	}
 
 	return out;
 }
-string Compress(const string input)
+
+
+// ユーティリティ
+inline void LZ77Compresser::DecideNextIndex()
 {
-	LZ77Compresser comp = LZ77Compresser(input);
-	string result;
-	
+	_currentIndex += _resultMatchingLength[_resultCount] + 1;
+}
 
-	int result_count = 1;
-
-	// 入力データの走査
-	// i: 符号化対象の文字のインデックス
-	// j: 過去の入力文字のインデックス
-	for (int currentIndex = 1; currentIndex < length; currentIndex++)
+int LZ77Compresser::SearchLongestIndex()
+{
+	int longestIndex = 0;
+	for (int searchingIndex = 1; searchingIndex < _inputLength; searchingIndex++)
 	{
-		// ScanMatchingChar(currentIndex);
 
-		// AssignValueToBuffer(currentIndex);
-
-
-
-
-		// SetResultArries(result_count);
-
-		result_count++;
-
-		// ResetBufferValue();
+		if (_bufferMatchingLength[longestIndex] ==
+			_bufferMatchingLength[searchingIndex])
+		{
+			longestIndex = searchingIndex;
+		}
+		else if (_bufferMatchingLength[longestIndex] < 
+			_bufferMatchingLength[searchingIndex])
+		{
+			longestIndex = searchingIndex;
+		}
 	}
 
-	string code;
-	for (int j = 0; j < length; j++)
-	{
-		// code = ConstructCode();
-		// result += code;
-	}
-
-	return result;
-
+	return longestIndex;
 }
