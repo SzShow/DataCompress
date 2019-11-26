@@ -46,5 +46,5 @@ FileManager::FileManager()
 
 FileManager::~FileManager()
 {
-	Destroy();
+	//Destroy();
 }

@@ -1,19 +1,21 @@
 
-#ifndef LZ77_COMPRESSER_H_
-#define LZ77_COMPRESSER_H_
+#ifndef LZ77_DECOMPRESSER_H_
+#define LZ77_DECOMPRESSER_H_
 
 #include <string>
+#include <vector>
+#include <sstream>
 
 
-class LZ77Compresser
+class LZ77Decompresser
 {
 public:
 
 	// 圧縮実行のインターフェイス
-	int Compress(std::string* output);
+	int Decompress(std::string* output);
 
 	// インスタンスの取得
-	static LZ77Compresser* GetInstance()
+	static LZ77Decompresser* GetInstance()
 	{
 		return l_pInstance;
 	}
@@ -23,7 +25,7 @@ public:
 	{
 		if (!l_pInstance)
 		{
-			l_pInstance = new LZ77Compresser(input);
+			l_pInstance = new LZ77Decompresser(input);
 		}
 	}
 	static void Destroy()
@@ -45,12 +47,12 @@ public:
 
 protected:
 	// コンストラクタ・デコンストラクタ
-	LZ77Compresser(const std::string input);
-	~LZ77Compresser();
+	LZ77Decompresser(const std::string input);
+	~LZ77Decompresser();
 
-	
+
 	// 内部機能
-	void ScanMatchingChar();
+	void SplitCompressed();
 	void CountMatchingLength();
 	void PickupLastChar();
 	void SetResultBuffer();
@@ -61,10 +63,11 @@ protected:
 
 protected:
 	// シングルトンインスタンス
-	static LZ77Compresser* l_pInstance;
+	static LZ77Decompresser* l_pInstance;
 
 	// 内部変数
 	std::string _input; // 入力データ
+	std::vector<std::string> _splited;
 	int _inputLength; // 入力データの要素数
 	int _currentIndex; // 符号化の対象となっている文字列の最後尾
 	int _largestIndex; // 最も長い一致文字列の開始位置

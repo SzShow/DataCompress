@@ -31,7 +31,6 @@ using namespace std;
 
 #include "FileManager.h"
 #include "LZ77Compresser.h"
-#include "UtilityFunction.h"
 
 typedef unsigned char byte;
 

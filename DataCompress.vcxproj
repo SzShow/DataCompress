@@ -411,11 +411,13 @@
   <ItemGroup>
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="LZ77Compresser.cpp" />
+    <ClCompile Include="LZ77Decompresser.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="UtilityFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="LZ77Decompresser.h" />
     <ClInclude Include="UtilityFunction.h" />
     <ClInclude Include="LZ77Compresser.h" />
   </ItemGroup>

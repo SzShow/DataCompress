@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Users\thesz\source\repos\DataCompress\</FILEPATH>
+      <FILENAME>LZ77Compresser.cpp</FILENAME>
+      <LINE>230</LINE>
+      <COLUMN>43</COLUMN>
+    </SFA>
+    <DEFECTCODE>6287</DEFECTCODE>
+    <DESCRIPTION>重複するコードです: 左と右のサブ式が同一です。</DESCRIPTION>
+    <FUNCTION>LZ77Compresser::Encode</FUNCTION>
+    <DECORATED>?Encode@LZ77Compresser@@IAE?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@H@Z</DECORATED>
+    <FUNCLINE>224</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>

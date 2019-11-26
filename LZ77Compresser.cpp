@@ -51,7 +51,8 @@ LZ77Compresser::LZ77Compresser(const string input) :
 	_input(input),
 	_inputLength(static_cast<int>(input.length())),
 	_currentIndex(1),
-	_resultCount(0)
+	_resultCount(0),
+	_largestIndex(0)
 {
 	_resultMatchingIndex = new int[_inputLength];
 	for (int i = 0; i < _inputLength; i++)
@@ -95,17 +96,7 @@ LZ77Compresser::LZ77Compresser(const string input) :
 LZ77Compresser::~LZ77Compresser()
 {
 	// 内部変数
-	_input; // 入力データ
-
-	// 出力バッファ
-	delete[] _resultMatchingIndex;
-	delete[] _resultMatchingLength;
-	delete[] _resultLastChar;
-
-	// 基本バッファ
-	delete[] _bufferMatchingIndex;
-	delete[] _bufferMatchingLength;
-	delete[] _bufferLastChar;
+	//Destroy();
 }
 
 // 基本バッファの操作
@@ -152,14 +143,14 @@ void LZ77Compresser::CountMatchingLength()
 					// 一致文字列の長さを入力
 					_bufferMatchingLength[bufferIndex] = count;
 
-					continue;
+					break;
 				}
 			}
 		}
 	}
 }
 
-int LZ77Compresser::PickupLastChar()
+void LZ77Compresser::PickupLastChar()
 {
 	for (int bufferIndex = 0; bufferIndex < _inputLength; bufferIndex++)
 	{
@@ -178,7 +169,7 @@ int LZ77Compresser::PickupLastChar()
 				{
 					// 
 					_bufferLastChar[bufferIndex] =
-						_input[_bufferMatchingIndex[bufferIndex] +
+						_input[_currentIndex +
 						_bufferMatchingLength[bufferIndex]];
 				}
 
@@ -274,3 +265,6 @@ int LZ77Compresser::SearchLongestIndex()
 
 	return longestIndex;
 }
+
+
+LZ77Compresser* LZ77Compresser::l_pInstance = nullptr;
