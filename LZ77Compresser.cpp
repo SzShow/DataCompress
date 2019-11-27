@@ -4,6 +4,7 @@
 
 using namespace std;
 
+// コア
 int LZ77Compresser::Compress(string* output)
 {
 
@@ -45,6 +46,7 @@ int LZ77Compresser::Compress(string* output)
 	return 0;
 
 }
+
 
 // コンストラクタ・デコンストラクタ
 LZ77Compresser::LZ77Compresser(const string input) :
@@ -98,6 +100,7 @@ LZ77Compresser::~LZ77Compresser()
 	// 内部変数
 	//Destroy();
 }
+
 
 // 基本バッファの操作
 void LZ77Compresser::ScanMatchingChar()
@@ -267,4 +270,5 @@ int LZ77Compresser::SearchLongestIndex()
 }
 
 
+// シングルトンインスタンスの初期化
 LZ77Compresser* LZ77Compresser::l_pInstance = nullptr;

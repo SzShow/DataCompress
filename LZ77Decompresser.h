@@ -31,16 +31,6 @@ public:
 	static void Destroy()
 	{
 
-		// 出力バッファ
-		delete[] l_pInstance->_resultMatchingIndex;
-		delete[] l_pInstance->_resultMatchingLength;
-		delete[] l_pInstance->_resultLastChar;
-
-		// 基本バッファ
-		delete[] l_pInstance->_bufferMatchingIndex;
-		delete[] l_pInstance->_bufferMatchingLength;
-		delete[] l_pInstance->_bufferLastChar;
-
 		delete l_pInstance;
 		l_pInstance = nullptr;
 	}
@@ -53,13 +43,9 @@ protected:
 
 	// 内部機能
 	void SplitCompressed();
-	void CountMatchingLength();
-	void PickupLastChar();
-	void SetResultBuffer();
-	void ResetBufferValue();
-	inline void DecideNextIndex();
-	std::string Encode(const int targetIndex);
-	int SearchLongestIndex();
+	void SplitCompressElements(const int splitedIndex);
+	std::string Decode();
+
 
 protected:
 	// シングルトンインスタンス
@@ -68,20 +54,11 @@ protected:
 	// 内部変数
 	std::string _input; // 入力データ
 	std::vector<std::string> _splited;
-	int _inputLength; // 入力データの要素数
-	int _currentIndex; // 符号化の対象となっている文字列の最後尾
-	int _largestIndex; // 最も長い一致文字列の開始位置
-	int _resultCount; // 最後に書き込んだ出力用バッファのインデックス
+	int _codeIndex;
+	int _codeLength;
+	std::string _codeLastChar;
+	std::string _pastOutput;
 
-	// 出力バッファ
-	int* _resultMatchingIndex;
-	int* _resultMatchingLength;
-	int* _resultLastChar;
-
-	// 基本バッファ
-	int* _bufferMatchingIndex;
-	int* _bufferMatchingLength;
-	int* _bufferLastChar;
 };
 
 

@@ -16,4 +16,12 @@
     <LocalDebuggerCommandArguments>testImage.cmp testDecompress.jpg 2</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Decomp|x64'">
+    <LocalDebuggerCommandArguments>testComp.txt testDecomp.txt</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Comp|x64'">
+    <LocalDebuggerCommandArguments>testFile.txt testComp.txt</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

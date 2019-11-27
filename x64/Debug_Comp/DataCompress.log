@@ -1,8 +1,1 @@
-﻿  FileManager.cpp
-  LZ77Compresser.cpp
-  Main.cpp
-  UtilityFunction.cpp
-  コードを生成中...
-C:\Users\thesz\source\repos\DataCompress\Main.cpp(347): warning C4715:  'LZ77': 値を返さないコントロール パスがあります。
-Main.obj : error LNK2001: 外部シンボル ""protected: static class LZ77Compresser * LZ77Compresser::l_pInstance" (?l_pInstance@LZ77Compresser@@1PEAV1@EA)" は未解決です。
-C:\Users\thesz\source\repos\DataCompress\x64\Debug_Comp\DataCompress.exe : fatal error LNK1120: 1 件の未解決の外部参照
+﻿  DataCompress.vcxproj -> C:\Users\Shota Suzuki\Source\Repos\SzShow\DataCompress\x64\Debug_Comp\DataCompress.exe

@@ -2,6 +2,44 @@
 
 using namespace std;
 
+// コア
+int LZ77Decompresser::Decompress(string* output)
+{
+
+	// スペースについて入力を分割し、各符号のvectorとして保存
+	SplitCompressed();
+
+	// 各符号について先頭から順番に走査
+	for (unsigned int splitedIndex = 0;
+		splitedIndex < _splited.size();
+		++splitedIndex)
+	{
+		// 現在のインデックスに対応する符号を諸要素に分割
+		SplitCompressElements(splitedIndex);
+
+		// デコード
+		*output += Decode();
+	}
+
+	return 0;
+}
+
+
+// コンストラクタ・デコンストラクタ
+LZ77Decompresser::LZ77Decompresser(const string input):
+	_input(input),
+	_codeIndex(0),
+	_codeLength(0)
+{
+
+}
+
+LZ77Decompresser::~LZ77Decompresser()
+{
+
+}
+
+// 内部関数
 void LZ77Decompresser::SplitCompressed()
 {
 	stringstream ss(_input);
@@ -11,59 +49,71 @@ void LZ77Decompresser::SplitCompressed()
 	{
 		_splited.push_back(tok);
 	}
+
+	// スペースが絡む部分はフォーマットがおかしくなるので
+	// このブロックでそれを修正
+	for (int splitedIndex = 0;
+		splitedIndex < static_cast<int>(_splited.size());
+		++splitedIndex)
+	{
+		if (_splited[splitedIndex].size() == 4)
+		{
+			_splited[splitedIndex].push_back(' ');
+		}
+		else if (_splited[splitedIndex].size() == 0)
+		{
+			_splited.erase(_splited.begin()+splitedIndex);
+		}
+	}
+
 }
 
-int LZ77Decompresser::Decompress(string* output)
+void LZ77Decompresser::SplitCompressElements(const int splitedIndex)
 {
+	_codeIndex = static_cast<int>(_splited[splitedIndex][0]) - '0';
+	_codeLength = static_cast<int>(_splited[splitedIndex][2]) - '0';
+	_codeLastChar = _splited[splitedIndex][4];
+}
 
-	SplitCompressed();
+string LZ77Decompresser::Decode()
+{
+	string result;
 
-	for (unsigned int i = 0; i < _splited.size(); ++i)
+	// 末尾の文字を決定
+	string ch;
+	if (_codeLastChar == "0")
 	{
-		if (_splited[i].size() == 0)
+		ch = ' ';
+	}
+	else
+	{
+		ch = _codeLastChar;
+	}
+
+	// 符号化部分があれば先に出力に追加
+	if (_codeIndex != 0)
+	{
+		int resultLength = static_cast<int>(_pastOutput.length());
+		for (int matchingIndex = 0;
+			matchingIndex < _codeLength;
+			matchingIndex++)
 		{
-			continue;
+			result += 
+				_pastOutput[resultLength - _codeIndex + matchingIndex];
 		}
+	}
 
-		vector<string> ss_input = split(_splited[i], ',');
+	// 末尾がNULLポインタまたはNULL文字でなければ出力
+	if (ch[0] != '0' ||
+		ch[0] != NULL)
+	{
+		result += ch;
+	}
 
-		if (_splited[i][4] == ',')
-		{
-			ss_input[2] = ',';
-		}
-		else if (ss_input.size() == 2)
-		{
-			ss_input.push_back(" ");
-		}
-
-		//if ((int)ss_input)
-
-		int p = stoi(ss_input[0]), l = stoi(ss_input[1]);
-		string ch;
-
-		if (ss_input[2][0] == '0')
-		{
-			ch = ' ';
-		}
-		else
-		{
-			ch = ss_input[2];
-		}
-
-		if (p != 0)
-		{
-			int result_len = (int)result.length();
-			for (int x = 0; x < l; x++)
-			{
-				result += result[result_len - p + x];
-			}
-		}
-
-		if (ch[0] != '0' || ch[0] != NULL)
-		{
-			result += ch;
-		}
-
-
+	_pastOutput += result;
 	return result;
 }
+
+
+// シングルトンインスタンスの初期化
+LZ77Decompresser* LZ77Decompresser::l_pInstance = nullptr;
