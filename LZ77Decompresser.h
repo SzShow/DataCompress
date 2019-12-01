@@ -1,10 +1,34 @@
 
+//---------------------------------------------------------------------------
+// Developed by Shota Suzuki
+//---------------------------------------------------------------------------
+/**
+* @file LZ77Decompresser.h
+* @brief ファイル解凍
+* @todo 解凍の際にエラーの修正
+* @note singletonデザインパターンに従って記述。
+*
+* 　詳細説明
+*
+* LZ77方式によって入力されたファイルを解凍するクラスです。
+* .cmpファイル内の先頭から拡張子を抽出した後、
+* ファイル内にある符号を全て読み取り、
+* それらを抽出された順番から復号して解凍する仕組みとなっています。
+* 
+*
+* singletonインスタンス生成はCreate()
+* singletonインスタンス呼び出しはl_pInstance
+* singletpnインスタンス消去はDestroy()
+*/
+//---------------------------------------------------------------------------
+
 #ifndef LZ77_DECOMPRESSER_H_
 #define LZ77_DECOMPRESSER_H_
 
 #include <string>
 #include <vector>
 #include <sstream>
+#include <iostream>
 //#include <memory>
 
 
@@ -35,8 +59,8 @@ public:
 	{
 		l_pInstance->_input.clear();
 		l_pInstance->_input.shrink_to_fit();
-		l_pInstance->_splited.clear();
-		l_pInstance->_splited.shrink_to_fit();
+		l_pInstance->_codes.clear();
+		l_pInstance->_codes.shrink_to_fit();
 		l_pInstance->_codeLastChar.clear();
 		l_pInstance->_codeLastChar.shrink_to_fit();
 		l_pInstance->_pastOutput.clear();
@@ -55,8 +79,8 @@ protected:
 	// 内部機能
 	//void ExtractExtension();
 	void SplitCompressed(std::string* extension);
-	void SplitCompressElements(const int splitedIndex);
-	std::string Decode();
+	int SplitCompressElements(const int splitedIndex);
+	void Decode();
 
 
 protected:
@@ -65,7 +89,7 @@ protected:
 
 	// 内部変数
 	std::string _input; // 入力データ
-	std::vector<std::string> _splited;
+	std::vector<std::string> _codes;
 	int _codeIndex;
 	int _codeLength;
 	std::string _codeLastChar;

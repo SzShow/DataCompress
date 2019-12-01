@@ -1,2 +1,4 @@
-﻿  Main.cpp
+﻿  FileManager.cpp
+  LZ77Decompresser.cpp
+  コードを生成中...
   DataCompress.vcxproj -> C:\Users\thesz\source\repos\DataCompress\Debug_Decomp\DataCompress.exe

@@ -5,23 +5,28 @@ using namespace std;
 // コア
 int LZ77Decompresser::Decompress(string* output, string* extension)
 {
-	// 先に拡張子のみ抽出
-	//ExtractExtension();
+	int errorCode = 0;
 
 	// スペースについて入力を分割し、各符号のvectorとして保存
 	SplitCompressed(extension);
 
 	// 各符号について先頭から順番に走査
 	for (unsigned int splitedIndex = 0;
-		splitedIndex < _splited.size();
+		splitedIndex < _codes.size();
 		++splitedIndex)
 	{
 		// 現在のインデックスに対応する符号を諸要素に分割
-		SplitCompressElements(splitedIndex);
+		errorCode = SplitCompressElements(splitedIndex);
+		if (errorCode != 0)
+		{
+			return errorCode;
+		}
 
 		// デコード
-		*output += Decode();
+		Decode();
 	}
+
+	*output = _pastOutput;
 
 	return 0;
 }
@@ -54,38 +59,52 @@ void LZ77Decompresser::SplitCompressed(string* extension)
 
 	while (getline(ss, tok, ' '))
 	{
-		_splited.push_back(tok);
+		_codes.push_back(tok);
 	}
 
 	// スペースそのものを復号する部分はフォーマットがおかしくなるので
 	// このブロックでそれを修正
 	for (int splitedIndex = 0;
-		splitedIndex < static_cast<int>(_splited.size());
+		splitedIndex < static_cast<int>(_codes.size());
 		++splitedIndex)
 	{
-		if (_splited[splitedIndex].size() == 4)
+		if (_codes[splitedIndex].size() == 0)
 		{
-			_splited[splitedIndex].push_back(' ');
-		}
-		else if (_splited[splitedIndex].size() == 0)
-		{
+			_codes[splitedIndex].push_back(' ');
+
 			// 遅いので後で他の手法を検討
-			_splited.erase(_splited.begin()+splitedIndex);
+			_codes.erase(_codes.begin() + splitedIndex + 1);
 		}
 	}
 
 }
 
-void LZ77Decompresser::SplitCompressElements(const int splitedIndex)
+int LZ77Decompresser::SplitCompressElements(const int splitedIndex)
 {
-	_codeIndex = static_cast<int>(_splited[splitedIndex][0]) - '0';
-	_codeLength = static_cast<int>(_splited[splitedIndex][2]) - '0';
-	_codeLastChar = _splited[splitedIndex][4];
+	if (_codes[splitedIndex].size() == 1)
+	{
+		_codeIndex = 0;
+		_codeLength = 0;
+		_codeLastChar = _codes[splitedIndex][0];
+	}
+	else if(_codes[splitedIndex].size() == 3)
+	{
+		_codeIndex = static_cast<unsigned char>(_codes[splitedIndex][0]);
+		_codeLength = static_cast<unsigned char>(_codes[splitedIndex][1]);
+		_codeLastChar = _codes[splitedIndex][2];
+	}
+	else
+	{
+		cerr << "想定されてない符号サイズが検出されました" << endl;
+		return 1;
+	}
+
+	return 0;
+
 }
 
-string LZ77Decompresser::Decode()
+void LZ77Decompresser::Decode()
 {
-	string result;
 
 	// 末尾の文字を決定
 	string ch;
@@ -106,7 +125,7 @@ string LZ77Decompresser::Decode()
 			matchingIndex < _codeLength;
 			matchingIndex++)
 		{
-			result += 
+			_pastOutput += 
 				_pastOutput[resultLength - _codeIndex + matchingIndex];
 		}
 	}
@@ -115,11 +134,8 @@ string LZ77Decompresser::Decode()
 	if (ch[0] != '0' ||
 		ch[0] != NULL)
 	{
-		result += ch;
+		_pastOutput += ch;
 	}
-
-	_pastOutput += result;
-	return result;
 }
 
 

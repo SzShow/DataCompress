@@ -1,4 +1,27 @@
 
+//---------------------------------------------------------------------------
+// Developed by Shota Suzuki
+//---------------------------------------------------------------------------
+/**
+* @file LZ77Decompresser.h
+* @brief ファイル圧縮
+* @note singletonデザインパターンに従って記述。
+*
+* 　詳細説明
+*
+* LZ77方式によって入力されたファイルを圧縮するクラスです
+* 一致文字列の開始位置(index)、一致文字列の長さ(length)などの符号化に必要な情報を集めた後に
+* [index length 符号化部のすぐ後に続く文字]より表される3Byteの符号を出力します。
+* また、一致文字列が見当たらない部分については符号化しません。
+*
+* SlidingWindowの位置と長さについては、それぞれ最大でUCHAR_MAXまでの値を取れます。
+*
+* singletonインスタンス生成はCreate()
+* singletonインスタンス呼び出しはl_pInstance
+* singletpnインスタンス消去はDestroy()
+*/
+//---------------------------------------------------------------------------
+
 #ifndef LZ77_COMPRESSER_H_
 #define LZ77_COMPRESSER_H_
 
@@ -71,13 +94,13 @@ protected:
 	int _resultCount; // 最後に書き込んだ出力用バッファのインデックス
 
 	// 出力バッファ
-	int* _resultMatchingIndex;
-	int* _resultMatchingLength;
+	unsigned char* _resultMatchingIndex;
+	unsigned char* _resultMatchingLength;
 	int* _resultLastChar;
 
 	// 基本バッファ
-	int* _bufferMatchingIndex;
-	int* _bufferMatchingLength;
+	unsigned char* _bufferMatchingIndex;
+	unsigned char* _bufferMatchingLength;
 	int* _bufferLastChar;
 };
 

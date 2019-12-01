@@ -51,13 +51,13 @@ LZ77Compresser::LZ77Compresser(const string input) :
 	_resultCount(0),
 	_largestIndex(0)
 {
-	_resultMatchingIndex = new int[_inputLength];
+	_resultMatchingIndex = new unsigned char[_inputLength];
 	for (int i = 0; i < _inputLength; i++)
 	{
 		_resultMatchingIndex[i] = 0;
 	}
 
-	_resultMatchingLength = new int[_inputLength];
+	_resultMatchingLength = new unsigned char[_inputLength];
 	for (int i = 0; i < _inputLength; i++)
 	{
 		_resultMatchingLength[i] = 0;
@@ -69,13 +69,13 @@ LZ77Compresser::LZ77Compresser(const string input) :
 		_resultLastChar[i] = 0;
 	}
 
-	_bufferMatchingIndex = new int[_inputLength];
+	_bufferMatchingIndex = new unsigned char[_inputLength];
 	for (int i = 0; i < _inputLength; i++)
 	{
 		_bufferMatchingIndex[i] = 0;
 	}
 
-	_bufferMatchingLength = new int[_inputLength];
+	_bufferMatchingLength = new unsigned char[_inputLength];
 	for (int i = 0; i < _inputLength; i++)
 	{
 		_bufferMatchingLength[i] = 0;
@@ -110,8 +110,7 @@ void LZ77Compresser::ScanMatchingChar()
 	for (int pastIndex = winStart; pastIndex < _currentIndex; pastIndex++)
 	{
 		// Œ»İ‚Ì•¶š‚ª‰ß‹‚Ì“ü—Í‚Æˆê’v‚µ‚½ê‡
-		// ‰ß‹‚Ì“ü—Í‚ÆŒ»İ‚Ì“ü—Í‚Ì”z—ñ“I‹——£‚ğ‹L˜^
-		// 
+		// ‰ß‹‚Ì“ü—Í‚ÆŒ»İ‚Ì“ü—Í‚Ì‹——£‚ğ‹L˜^
 		if (_input[_currentIndex] == _input[pastIndex])
 		{
 			_bufferMatchingIndex[firstMatchCount] = 
@@ -144,6 +143,11 @@ void LZ77Compresser::CountMatchingLength()
 				else
 				{
 					// ˆê’v•¶š—ñ‚Ì’·‚³‚ğ“ü—Í
+					if (count > UCHAR_MAX)
+					{
+						count = UCHAR_MAX;
+					}
+
 					_bufferMatchingLength[bufferIndex] = count;
 
 					break;
@@ -223,18 +227,17 @@ string LZ77Compresser::Encode(const int targetIndex)
 		if (_resultLastChar[targetIndex] != 0)
 		{
 			char z = _resultLastChar[targetIndex];
-			out = to_string(_resultMatchingIndex[targetIndex]) + "," +
-				to_string(_resultMatchingLength[targetIndex]) + "," +
-				z + " ";
+			out.push_back(z);
+			out.push_back(' ');
 		}
 	}
 	else
 	{
-		// ƒR[ƒh‚ª’·‚­‚È‚éŒ´ˆö‚ğì‚Á‚Ä‚¢‚é
 		char z = _resultLastChar[targetIndex];
-		out = to_string(_resultMatchingIndex[targetIndex]) + "," +
-			to_string(_resultMatchingLength[targetIndex]) + "," +
-			z + " ";
+		out.push_back(_resultMatchingIndex[targetIndex]);
+		out.push_back(_resultMatchingLength[targetIndex]);
+		out.push_back(z);
+		out.push_back(' ');
 	}
 
 	return out;

@@ -1,0 +1,10 @@
+﻿  FileManager.cpp
+  LZ77Compresser.cpp
+  LZ77Decompresser.cpp
+  Main.cpp
+  UtilityFunction.cpp
+  コード生成しています。
+  Previous IPDB not found, fall back to full compilation.
+  All 343 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  コード生成が終了しました。
+  DataCompress.vcxproj -> C:\Users\thesz\source\repos\DataCompress\Release_Comp\DataCompress.exe
