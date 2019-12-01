@@ -10,7 +10,7 @@ class LZ77Compresser
 public:
 
 	// 圧縮実行のインターフェイス
-	int Compress(std::string* output);
+	int Compress(const std::string* extensionName, std::string* output);
 
 	// インスタンスの取得
 	static LZ77Compresser* GetInstance()
@@ -29,15 +29,15 @@ public:
 	static void Destroy()
 	{
 
-		// 出力バッファ
 		delete[] l_pInstance->_resultMatchingIndex;
 		delete[] l_pInstance->_resultMatchingLength;
 		delete[] l_pInstance->_resultLastChar;
-
-		// 基本バッファ
 		delete[] l_pInstance->_bufferMatchingIndex;
 		delete[] l_pInstance->_bufferMatchingLength;
 		delete[] l_pInstance->_bufferLastChar;
+
+		l_pInstance->_input.clear();
+		l_pInstance->_input.shrink_to_fit();
 
 		delete l_pInstance;
 		l_pInstance = nullptr;
@@ -56,8 +56,8 @@ protected:
 	void SetResultBuffer();
 	void ResetBufferValue();
 	inline void DecideNextIndex();
-	std::string Encode(const int targetIndex);
 	int SearchLongestIndex();
+	std::string Encode(const int targetIndex);
 
 protected:
 	// シングルトンインスタンス

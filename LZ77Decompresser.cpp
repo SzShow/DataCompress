@@ -3,11 +3,13 @@
 using namespace std;
 
 // コア
-int LZ77Decompresser::Decompress(string* output)
+int LZ77Decompresser::Decompress(string* output, string* extension)
 {
+	// 先に拡張子のみ抽出
+	//ExtractExtension();
 
 	// スペースについて入力を分割し、各符号のvectorとして保存
-	SplitCompressed();
+	SplitCompressed(extension);
 
 	// 各符号について先頭から順番に走査
 	for (unsigned int splitedIndex = 0;
@@ -39,18 +41,23 @@ LZ77Decompresser::~LZ77Decompresser()
 
 }
 
+
 // 内部関数
-void LZ77Decompresser::SplitCompressed()
+void LZ77Decompresser::SplitCompressed(string* extension)
 {
 	stringstream ss(_input);
 	string tok;
+
+	// 先に拡張子を抽出
+	getline(ss, tok, '_');
+	*extension = tok;
 
 	while (getline(ss, tok, ' '))
 	{
 		_splited.push_back(tok);
 	}
 
-	// スペースが絡む部分はフォーマットがおかしくなるので
+	// スペースそのものを復号する部分はフォーマットがおかしくなるので
 	// このブロックでそれを修正
 	for (int splitedIndex = 0;
 		splitedIndex < static_cast<int>(_splited.size());
@@ -62,6 +69,7 @@ void LZ77Decompresser::SplitCompressed()
 		}
 		else if (_splited[splitedIndex].size() == 0)
 		{
+			// 遅いので後で他の手法を検討
 			_splited.erase(_splited.begin()+splitedIndex);
 		}
 	}

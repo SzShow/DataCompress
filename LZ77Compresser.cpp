@@ -5,37 +5,32 @@
 using namespace std;
 
 // コア
-int LZ77Compresser::Compress(string* output)
+int LZ77Compresser::Compress(const string* extensionName, string* output)
 {
-
-	int result_count = 1;
-
 	// 入力データの走査
 	while (_currentIndex < _inputLength)
 	{
 
-		// 1. 過去の文字列から現在の文字と一致するものをリストアップ
 		ScanMatchingChar();
 
-		// 2. リストアップした文字からインデックスを計算
 		CountMatchingLength();
 		
-		// 3. 符号化する文字列に続く文字を保存
+		// 符号化する文字列に続く文字を保存
 		PickupLastChar();
 		
-		// 4. 最も長い一致文字列を出力用バッファに保存
+		// 最も長い一致文字列を出力用バッファに保存
 		SetResultBuffer();
 		
-		// 5. 通常バッファの中身をリセット
 		ResetBufferValue();
 		
-		// 6. 一致文字列の長さから次の符号化対象文字列を決定
+		// 一致文字列の長さから次の符号化対象文字列を決定
 		DecideNextIndex();
 
 	}
 
 	// 出力への書き込み
 	string code;
+	*output += *extensionName + "_"; //拡張子を最初に入れる
 	for (int outputIndex = 0; outputIndex < _inputLength; outputIndex++)
 	{
 

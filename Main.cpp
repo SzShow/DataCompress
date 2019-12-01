@@ -32,57 +32,83 @@ using namespace std;
 
 
 // argv[0]: 入力ファイル名
-// argv[1]: 出力ファイル名
 int main(int argc, char *argv[])
 {
-    // 初期化
-	int errorCode = 0;
 
+	int errorCode = 0;
 	string input;
 	string output;
 
+
 	FileManager::Create();
 	FileManager* fManager = FileManager::GetInstance();
-
-
-	// ファイル読み込み
-	
 	errorCode = fManager->LoadFile(argv[1], &input);
 	if (errorCode != 0)
 	{
 		return errorCode;
 	}
-	
-	
+	cout << "ファイルの読み込みが完了しました" << endl;
 
-	// 圧縮の実行
-	// 
-	//LZ77Compresser::Create(input);
-	//LZ77Compresser* lz77 = LZ77Compresser::GetInstance();
-	//errorCode = lz77->Compress(&output);
-	LZ77Decompresser::Create(input);
-	LZ77Decompresser* lz77 = LZ77Decompresser::GetInstance();
-	errorCode = lz77->Decompress(&output);
+	
+	string outputExtension;
+	string extensionName = fManager->GetExtensionName();
+	if (extensionName == "cmp")
+	{
+		LZ77Decompresser::Create(input);
+		LZ77Decompresser* lz77 = LZ77Decompresser::GetInstance();
+		errorCode = lz77->Decompress(&output, &outputExtension);
+		if (errorCode != 0)
+		{
+			return errorCode;
+		}
+		LZ77Decompresser::Destroy();
+		cout << "解凍が完了しました。" << endl;
+	}
+	else
+	{
+		outputExtension = "cmp";
+		LZ77Compresser::Create(input);
+		LZ77Compresser* lz77 = LZ77Compresser::GetInstance();
+		errorCode = lz77->Compress(&extensionName, &output);
+		if (errorCode != 0)
+		{
+			return errorCode;
+		}
+		LZ77Compresser::Destroy();
+
+		cout << "圧縮が完了しました" << endl;
+	}
+
+	
+	string outputBaseName = fManager->GetBasicName();
+	string outputName = outputBaseName + "." + outputExtension;
+	errorCode = fManager->SaveFile(&outputName, &outputExtension ,&output);
 	if (errorCode != 0)
 	{
 		return errorCode;
 	}
-
-
-	// ファイルの出力
-	errorCode = fManager->SaveFile(argv[2], &output);
-	if (errorCode != 0)
-	{
-		return errorCode;
-	}
-
-	//終了処理
+	cout << "ファイルの保存が完了しました" << endl;
 	FileManager::Destroy();
-	LZ77Decompresser::Destroy();
 
-	//終了入力の受付
-	cout << "圧縮が完了しました。\n任意のキーで終了します" << endl;
-	getchar();
+
+	// shrink_to_fit()を使ってもcapacityが減少しない？
+	/*input.clear();
+	input.shrink_to_fit();*/
+	string().swap(input); //こっちでも同様
+	output.clear();
+	output.shrink_to_fit();
+	outputExtension.clear();
+	outputExtension.shrink_to_fit();
+	extensionName.clear();
+	extensionName.shrink_to_fit();
+	outputBaseName.clear();
+	outputBaseName.shrink_to_fit();
+	outputName.clear();
+	outputName.shrink_to_fit();
+	
+
+	cout << "任意のキーで終了します" << endl;
+	system("pause");
 
 	return 0;
 

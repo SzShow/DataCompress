@@ -9,7 +9,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Decomp|Win32'">
-    <LocalDebuggerCommandArguments>testCmp.txt testDecomp.txt 2</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>testCmp.cmp </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DecompImage|Win32'">

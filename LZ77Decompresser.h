@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+//#include <memory>
 
 
 class LZ77Decompresser
@@ -12,13 +13,15 @@ class LZ77Decompresser
 public:
 
 	// 圧縮実行のインターフェイス
-	int Decompress(std::string* output);
+	int Decompress(std::string* output, std::string* extension);
+
 
 	// インスタンスの取得
 	static LZ77Decompresser* GetInstance()
 	{
 		return l_pInstance;
 	}
+
 
 	// インスタンスの操作
 	static void Create(const std::string input)
@@ -30,6 +33,14 @@ public:
 	}
 	static void Destroy()
 	{
+		l_pInstance->_input.clear();
+		l_pInstance->_input.shrink_to_fit();
+		l_pInstance->_splited.clear();
+		l_pInstance->_splited.shrink_to_fit();
+		l_pInstance->_codeLastChar.clear();
+		l_pInstance->_codeLastChar.shrink_to_fit();
+		l_pInstance->_pastOutput.clear();
+		l_pInstance->_pastOutput.shrink_to_fit();
 
 		delete l_pInstance;
 		l_pInstance = nullptr;
@@ -42,7 +53,8 @@ protected:
 
 
 	// 内部機能
-	void SplitCompressed();
+	//void ExtractExtension();
+	void SplitCompressed(std::string* extension);
 	void SplitCompressElements(const int splitedIndex);
 	std::string Decode();
 
