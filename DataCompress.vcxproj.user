@@ -5,7 +5,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_CompImage|Win32'">
-    <LocalDebuggerCommandArguments>testImage.jpg testImage.cmp 1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>testImage.jpg</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Decomp|Win32'">
@@ -13,7 +13,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DecompImage|Win32'">
-    <LocalDebuggerCommandArguments>testImage.cmp testDecompress.jpg 2</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>testImageCmp.cmp</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Decomp|x64'">

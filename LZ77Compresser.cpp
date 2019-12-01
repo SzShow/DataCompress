@@ -100,18 +100,23 @@ LZ77Compresser::~LZ77Compresser()
 // 基本バッファの操作
 void LZ77Compresser::ScanMatchingChar()
 {
-	int char_info_selc = 0;
+	int firstMatchCount = 0;
+	int winStart = _currentIndex - UCHAR_MAX;
+	if (winStart < 0)
+	{
+		winStart = 0;
+	}
 	
-	for (int pastIndex = 0; pastIndex < _currentIndex; pastIndex++)
+	for (int pastIndex = winStart; pastIndex < _currentIndex; pastIndex++)
 	{
 		// 現在の文字が過去の入力と一致した場合
 		// 過去の入力と現在の入力の配列的距離を記録
 		// 
 		if (_input[_currentIndex] == _input[pastIndex])
 		{
-			_bufferMatchingIndex[char_info_selc] = 
+			_bufferMatchingIndex[firstMatchCount] = 
 				_currentIndex - pastIndex;
-			char_info_selc++;
+			firstMatchCount++;
 		}
 
 	}
@@ -215,8 +220,7 @@ string LZ77Compresser::Encode(const int targetIndex)
 	if (_resultMatchingIndex[targetIndex] == 0 &&
 		_resultMatchingLength[targetIndex] == 0)
 	{
-		if (_resultLastChar[targetIndex] != NULL ||
-			_resultLastChar[targetIndex] != 0)
+		if (_resultLastChar[targetIndex] != 0)
 		{
 			char z = _resultLastChar[targetIndex];
 			out = to_string(_resultMatchingIndex[targetIndex]) + "," +
